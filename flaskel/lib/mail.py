@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 
 """
-acsa/lib/mail.py
-~~~~~~~~~~~~~~~~
+    flaskel/lib/mail.py
+    -------------------
 
-Composes an email and sends it to a recipient specified.
+    Composes an email and sends it to a recipient specified.
 """
 
 from contextlib import contextmanager
@@ -15,12 +15,12 @@ from email.utils import formatdate
 
 from jinja2 import Environment, PackageLoader
 
-from acsa import config as cfg
+from flaskel import config as cfg
 
 
 def get_template(template_name):
     """Load an email template."""
-    return Environment(loader=PackageLoader("acsa")).get_template(
+    return Environment(loader=PackageLoader("flaskel")).get_template(
         template_name
     )
 
