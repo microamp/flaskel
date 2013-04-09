@@ -35,7 +35,7 @@ def _get_smtp_conn(server, port, user, password):
         conn.close()
 
 
-def send(recipient, subject, message, sender="Mailer <mailer@webdrive.co.nz>"):
+def send(recipient, subject, message, sender):
     """Send an email via SMTP."""
     if getattr(cfg, "DEBUG", False):
         return False
