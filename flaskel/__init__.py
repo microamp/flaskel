@@ -1,14 +1,17 @@
-# -*- coding: utf-8 -*-
+#-*- coding: utf-8 -*-
 
 import os
 import logging.config
+from itertools import ifilter
 
 from flask import Flask
+
+__version__ = "0.1"
 
 
 class DefaultConfig(object):
     DEBUG = True
-    SCRIPT_NAME = "/flaskel"
+    SCRIPT_NAME = ""
 
 
 def from_pyfile(config_file):
@@ -16,39 +19,46 @@ def from_pyfile(config_file):
     config.__file__ = os.path.join(os.getcwd(), config_file)
     try:
         execfile(config_file, config.__dict__)
-    except IOError as e:
-        raise e
+    except IOError:
+        raise
     return config
+
+
+config_paths = ("/srv/www/flaskel/current/conf/settings.py",
+                "flaskel/settings.py", "settings.py",)
+config = from_pyfile(list(ifilter(lambda path: os.path.exists(path),
+                                  config_paths))[0])
 
 
 def _before_request():
     pass
 
 
-def _teardown_request(exception):
+def _teardown_request(e):
     pass
 
 
-# flask app
-app = Flask(__name__)
+def create_app():
+    global config
 
-# app config
-config_file = os.environ.get("CONFIG", "flaskel/settings.py")
-config = from_pyfile(config_file=config_file)
-app.config.from_object(config)
+    # flask app
+    app = Flask(__name__)
 
-# before/after request
-app.before_request(_before_request)
-app.teardown_request(_teardown_request)
+    # app config
+    app.config.from_object(config)
 
-# logging config
-logging_config = os.environ.get(
-    "LOGGING_CONFIG",
-    app.config.get("LOGGING_CONFIG")
-)
-if logging_config:
-    logging.config.fileConfig(logging_config)
+    # before/after request
+    app.before_request(_before_request)
+    app.teardown_request(_teardown_request)
 
-# blueprints
-import views.test
-app.register_blueprint(views.test.bp_test)
+    # logging config
+    logging_config = os.environ.get("LOGGING_CONFIG",
+                                    app.config.get("LOGGING_CONFIG"))
+    if logging_config:
+        logging.config.fileConfig(logging_config)
+
+    # blueprints
+    import api.test
+    app.register_blueprint(api.test.bp_test)
+
+    return app
