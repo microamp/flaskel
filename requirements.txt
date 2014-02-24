@@ -1,0 +1,11 @@
+epc==0.0.5
+flake8==2.0
+Flask==0.9
+jedi==0.7.0
+Jinja2==2.6
+mccabe==0.2.1
+pep8==1.4.5
+pyflakes==0.6.1
+sexpdata==0.0.3
+Werkzeug==0.8.3
+wsgiref==0.1.2
