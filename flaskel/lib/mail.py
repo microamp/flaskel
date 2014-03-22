@@ -15,7 +15,7 @@ from email.utils import formatdate
 
 from jinja2 import Environment, PackageLoader
 
-from flaskel import config as cfg
+from flaskel import app
 
 
 def get_template(template_name):
@@ -37,7 +37,7 @@ def _get_smtp_conn(server, port, user, password):
 
 def send(recipient, subject, message, sender):
     """Send an email via SMTP."""
-    if getattr(cfg, "DEBUG", False):
+    if app.config["DEBUG"]:
         return False
 
     msg = MIMEMultipart()
@@ -47,10 +47,10 @@ def send(recipient, subject, message, sender):
     msg["Subject"] = subject
     msg.attach(MIMEText(message, "plain", "UTF-8"))
 
-    with _get_smtp_conn(server=cfg.EMAIL["SERVER"],
-                        port=cfg.EMAIL["PORT"],
-                        user=cfg.EMAIL["USER"],
-                        password=cfg.EMAIL["PASSWORD"]) as conn:
+    with _get_smtp_conn(server=app.config["EMAIL"]["SERVER"],
+                        port=app.config["EMAIL"]["PORT"],
+                        user=app.config["EMAIL"]["USER"],
+                        password=app.config["EMAIL"]["PASSWORD"]) as conn:
         conn.sendmail(sender, recipient, msg.as_string())
         return True
 
